@@ -24,7 +24,7 @@ const initialTasks: TaskItem[] = [
   },
   {
     id: "task-2",
-    name: "Finalize Contract Agreement for Nexus Retail Deal",
+    name: "Finalize Contract Agreement for Orbix Retail Deal",
     module: "CRM",
     dueDate: "Oct 20, 2026",
     status: "Pending Review",

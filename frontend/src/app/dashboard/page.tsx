@@ -6,16 +6,27 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { PerformanceChart } from "@/components/dashboard/performance-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { TasksTable } from "@/components/dashboard/tasks-table";
+import { OrganizationInfoCard } from "@/components/dashboard/organization-info-card";
+import { useDashboard } from "@/context/dashboard-context";
 
 export default function DashboardOverviewPage() {
+  const { user, activeOrg } = useDashboard();
+  const greeting = user?.firstName ? `Good morning, ${user.firstName}` : "Welcome back";
+  const subtitle = activeOrg
+    ? `Here's what's happening across ${activeOrg.name} today.`
+    : "Here's what's happening across your organization today.";
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Page Header with Live Auth Data */}
       <PageHeader
-        title="Good morning, Alex"
-        subtitle="Here's what's happening across your organization today."
+        title={greeting}
+        subtitle={subtitle}
         showCreateButton={true}
       />
+
+      {/* Organization Information Card */}
+      <OrganizationInfoCard />
 
       {/* 4 Summary Stat Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

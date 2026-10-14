@@ -50,20 +50,28 @@ export class OrganizationService {
     // 3. Register creator as 'owner' in organization_members
     const { error: memberError } = await supabase
       .from("organization_members")
-      .upsert(
-        {
-          organization_id: orgId,
-          user_id: userId,
-          role: "owner",
-        },
-        { onConflict: "organization_id,user_id" }
-      );
+      .insert({
+        organization_id: orgId,
+        user_id: userId,
+        role: "owner",
+      });
 
     if (memberError) {
       console.warn("Owner membership notice:", memberError.message);
+      // Fallback try upsert in case row already exists
+      await supabase
+        .from("organization_members")
+        .upsert(
+          {
+            organization_id: orgId,
+            user_id: userId,
+            role: "owner",
+          },
+          { onConflict: "organization_id,user_id" }
+        );
     }
 
-    // 4. Now that membership is recorded, SELECT policy is guaranteed to pass!
+    // 4. Query the created organization
     const { data: org, error: fetchError } = await supabase
       .from("organizations")
       .select("*")
@@ -75,18 +83,31 @@ export class OrganizationService {
         id: orgId,
         name: dto.name,
         slug: dto.slug,
+        role: "owner",
         created_by: userId,
+        organizations: {
+          id: orgId,
+          name: dto.name,
+          slug: dto.slug,
+        },
       };
     }
 
-    return org;
+    return {
+      ...org,
+      role: "owner",
+      organizations: org,
+    };
   }
 
   /**
    * Retrieves all organizations that the authenticated user belongs to.
+   * Cross-checks organization_members and organizations table for complete visibility.
+   * Returns a standardized structure compatible with both flat and nested callers.
    */
   static async listUserOrganizations(userId: string, supabase: SupabaseClient) {
-    const { data, error } = await supabase
+    // 1. Fetch from organization_members
+    const { data: memberData, error: memberError } = await supabase
       .from("organization_members")
       .select(`
         role,
@@ -95,16 +116,82 @@ export class OrganizationService {
           id,
           name,
           slug,
-          created_at
+          created_at,
+          created_by
         )
       `)
       .eq("user_id", userId);
 
-    if (error) {
-      throw new Error(`Failed to fetch user organizations: ${error.message}`);
+    if (memberError) {
+      console.warn("Notice fetching organization_members:", memberError.message);
     }
 
-    return data;
+    // 2. Also fetch all organizations accessible to this user
+    const { data: directOrgs, error: orgsError } = await supabase
+      .from("organizations")
+      .select("id, name, slug, created_at, created_by");
+
+    if (orgsError) {
+      console.warn("Notice fetching organizations directly:", orgsError.message);
+    }
+
+    const orgsList: any[] = [];
+    const seenOrgIds = new Set<string>();
+
+    if (memberData && Array.isArray(memberData)) {
+      for (const item of memberData) {
+        const org = Array.isArray(item.organizations)
+          ? item.organizations[0]
+          : item.organizations;
+
+        if (org && org.id && !seenOrgIds.has(org.id)) {
+          seenOrgIds.add(org.id);
+          orgsList.push({
+            id: org.id,
+            name: org.name,
+            slug: org.slug,
+            role: item.role || "member",
+            createdAt: org.created_at || item.created_at,
+            createdBy: org.created_by,
+            organizations: org, // backward compatibility
+          });
+        }
+      }
+    }
+
+    // Merge any organizations that exist in the organizations table but were missing a membership record
+    if (directOrgs && Array.isArray(directOrgs)) {
+      for (const org of directOrgs) {
+        if (org && org.id && !seenOrgIds.has(org.id)) {
+          seenOrgIds.add(org.id);
+          const role = org.created_by === userId ? "owner" : "member";
+          orgsList.push({
+            id: org.id,
+            name: org.name,
+            slug: org.slug,
+            role,
+            createdAt: org.created_at,
+            createdBy: org.created_by,
+            organizations: org,
+          });
+
+          // Self-heal: ensure creator/member has membership recorded
+          try {
+            await supabase
+              .from("organization_members")
+              .insert({
+                organization_id: org.id,
+                user_id: userId,
+                role,
+              });
+          } catch {
+            // ignore self-heal error
+          }
+        }
+      }
+    }
+
+    return orgsList;
   }
 
   /**

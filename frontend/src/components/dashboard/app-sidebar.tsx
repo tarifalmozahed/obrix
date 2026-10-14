@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrganizationSwitcher } from "./organization-switcher";
 import { SidebarNavigation } from "./sidebar-navigation";
+import { useDashboard } from "@/context/dashboard-context";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -18,6 +19,11 @@ export function AppSidebar({
   mobileOpen,
   onCloseMobile,
 }: AppSidebarProps) {
+  const { user } = useDashboard();
+  const displayName = user?.fullName || "User";
+  const displayRole = user?.role || "Member";
+  const displayInitials = user?.initials || "U";
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -41,14 +47,14 @@ export function AppSidebar({
         {/* Top Header: Logo & App Name */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200/80">
           <div className="flex items-center gap-2.5 min-w-0">
-            {/* Nexus Logo Badge */}
+            {/* Orbix Logo Badge */}
             <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0">
               N
             </div>
             {!collapsed && (
               <div className="min-w-0">
                 <span className="font-bold text-base text-slate-900 tracking-tight block">
-                  Nexus
+                  Orbix
                 </span>
                 <span className="text-[10px] text-slate-400 font-medium tracking-wide block -mt-1 uppercase">
                   Enterprise ERP
@@ -81,15 +87,15 @@ export function AppSidebar({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
-                AM
+                {displayInitials}
               </div>
               {!collapsed && (
                 <div className="min-w-0">
                   <div className="text-xs font-semibold text-slate-900 truncate">
-                    Alex Morgan
+                    {displayName}
                   </div>
                   <div className="text-[10px] text-slate-500 font-medium truncate">
-                    Administrator
+                    {displayRole}
                   </div>
                 </div>
               )}

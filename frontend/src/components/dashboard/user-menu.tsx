@@ -2,15 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { CircleUserRound, Settings, LogOut, ChevronDown } from "lucide-react";
-import { createClient } from "@/lib/supabase";
+import { useDashboard } from "@/context/dashboard-context";
 
 export function UserMenu() {
-  const router = useRouter();
+  const { user, signOut } = useDashboard();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -24,9 +22,13 @@ export function UserMenu() {
 
   const handleLogout = async () => {
     setOpen(false);
-    await supabase.auth.signOut();
-    router.push("/login");
+    await signOut();
   };
+
+  const displayName = user?.fullName || "User";
+  const displayEmail = user?.email || "user@example.com";
+  const displayInitials = user?.initials || "U";
+  const displayRole = user?.role || "Member";
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -36,16 +38,25 @@ export function UserMenu() {
         aria-label="User menu"
       >
         <div className="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-700 font-bold text-xs flex items-center justify-center">
-          AM
+          {displayInitials}
         </div>
         <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-white border border-slate-200 shadow-xl p-1.5 z-50 animate-in fade-in-50 zoom-in-95">
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-white border border-slate-200 shadow-xl p-1.5 z-50 animate-in fade-in-50 zoom-in-95">
           <div className="px-2.5 py-2 border-b border-slate-100">
-            <div className="text-xs font-bold text-slate-900">Alex Morgan</div>
-            <div className="text-[11px] text-slate-500 font-mono">alex.morgan@acme.corp</div>
+            <div className="text-xs font-bold text-slate-900 truncate">
+              {displayName}
+            </div>
+            <div className="text-[11px] text-slate-500 font-mono truncate">
+              {displayEmail}
+            </div>
+            <div className="mt-1">
+              <span className="inline-block text-[10px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded px-1.5 py-0.5">
+                {displayRole}
+              </span>
+            </div>
           </div>
 
           <div className="py-1">
