@@ -10,6 +10,10 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   SUPABASE_URL: z.string().url().default("https://ufkozzlxzfhleiqklyjb.supabase.co"),
   SUPABASE_ANON_KEY: z.string().min(1).default("sb_publishable_286vN52b1ksNmlbKxVJbuw_Yqc5e7S7"),
+  CLOUDINARY_CLOUD_NAME: z.string().default("gjn4majk"),
+  CLOUDINARY_API_KEY: z.string().default("117432279288263"),
+  CLOUDINARY_API_SECRET: z.string().default("AaKPFxmNzPk9s6RqEq1zccdEzj8"),
+  CLOUDINARY_URL: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

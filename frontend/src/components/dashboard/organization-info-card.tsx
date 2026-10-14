@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useDashboard } from "@/context/dashboard-context";
 import { cn } from "@/lib/utils";
+import { ImageUpload } from "@/components/media";
 
 export function OrganizationInfoCard() {
   const { activeOrg, orgLoading, refreshUserData, organizations, setActiveOrg } = useDashboard();
@@ -184,6 +185,31 @@ export function OrganizationInfoCard() {
           </div>
         </div>
       )}
+
+      {/* Cloudinary Brand Logo Upload Section */}
+      <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-xs font-semibold text-slate-900 font-heading">Company Branding Logo</div>
+          <p className="text-[11px] text-slate-400 mt-0.5">
+            Stored securely in Cloudinary under <span className="font-mono text-slate-600 font-semibold">company/branding</span>
+          </p>
+        </div>
+        <div className="w-full sm:w-48 shrink-0">
+          <ImageUpload
+            currentUrl={activeOrg?.logoUrl || null}
+            organizationId={activeOrg?.id || ""}
+            folder="company/branding"
+            relatedType="company_logo"
+            relatedId={activeOrg?.id}
+            aspectRatio="square"
+            label=""
+            description="Upload Mark (PNG, SVG, JPG)"
+            onUploadSuccess={() => {
+              refreshUserData();
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

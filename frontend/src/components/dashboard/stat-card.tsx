@@ -26,23 +26,23 @@ export function StatCard({
   iconColor = "text-indigo-600",
 }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm">
+    <div className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-xs transition-all hover:border-slate-300 hover:shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
           {title}
         </span>
         <div
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-lg",
+            "flex h-10 w-10 items-center justify-center rounded-xl",
             iconBg
           )}
         >
-          <Icon className={cn("h-4.5 w-4.5", iconColor)} />
+          <Icon className={cn("h-5 w-5", iconColor)} />
         </div>
       </div>
 
       <div className="mt-3">
-        <div className="text-2xl font-bold tracking-tight text-slate-900">
+        <div className="text-3xl font-bold tracking-tight text-slate-900 font-heading">
           {value}
         </div>
       </div>

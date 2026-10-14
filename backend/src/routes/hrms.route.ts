@@ -3,6 +3,7 @@ import { z } from "zod";
 import { HRMSController } from "../controllers/hrms.controller.js";
 import { requireAuth, requireOrgContext, requireOrgRole } from "../middleware/auth.js";
 import { validateRequest } from "../middleware/validate.js";
+import { onboardingRouter } from "./onboarding.route.js";
 
 const router = Router();
 
@@ -108,5 +109,112 @@ router.patch(
   validateRequest(updateLeaveStatusSchema),
   HRMSController.updateLeaveStatus
 );
+
+// --- Dynamic Branches / Locations ---
+router.get("/branches", HRMSController.listBranches);
+router.post(
+  "/branches",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createBranch
+);
+router.put(
+  "/branches/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updateBranch
+);
+router.delete(
+  "/branches/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deleteBranch
+);
+
+// --- Dynamic Positions & Salary Structures ---
+router.get("/positions", HRMSController.listPositions);
+router.post(
+  "/positions",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createPosition
+);
+router.put(
+  "/positions/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updatePosition
+);
+router.delete(
+  "/positions/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deletePosition
+);
+
+// --- Probation Durations & Policies ---
+router.get("/probation-durations", HRMSController.listProbationDurations);
+router.get("/configuration/probation", HRMSController.listProbationDurations);
+router.post(
+  "/probation-durations",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createProbationDuration
+);
+router.post(
+  "/configuration/probation",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createProbationDuration
+);
+router.put(
+  "/probation-durations/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updateProbationDuration
+);
+router.put(
+  "/configuration/probation/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updateProbationDuration
+);
+router.delete(
+  "/probation-durations/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deleteProbationDuration
+);
+router.delete(
+  "/configuration/probation/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deleteProbationDuration
+);
+
+// --- Shifts Configuration ---
+router.get("/shifts", HRMSController.listShifts);
+router.get("/configuration/shifts", HRMSController.listShifts);
+router.post(
+  "/shifts",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createShift
+);
+router.post(
+  "/configuration/shifts",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.createShift
+);
+router.put(
+  "/shifts/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updateShift
+);
+router.put(
+  "/configuration/shifts/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.updateShift
+);
+router.delete(
+  "/shifts/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deleteShift
+);
+router.delete(
+  "/configuration/shifts/:id",
+  requireOrgRole(["owner", "admin", "manager"]),
+  HRMSController.deleteShift
+);
+
+// --- Employee Onboarding Pipeline (8-Section Wizard) ---
+router.use("/onboarding", onboardingRouter);
 
 export const hrmsRouter = router;

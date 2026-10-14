@@ -10,5 +10,8 @@
     "build:backend": "npm --prefix backend run build",
     "start:frontend": "npm --prefix frontend run start",
     "start:backend": "npm --prefix backend run start"
+  },
+  "dependencies": {
+    "cloudinary": "^2.11.0"
   }
 }

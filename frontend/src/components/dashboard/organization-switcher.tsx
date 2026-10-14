@@ -14,6 +14,7 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
   const [open, setOpen] = useState(false);
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newOrgName, setNewOrgName] = useState("");
+  const [branchInput, setBranchInput] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,11 +44,16 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
     const slug = baseSlug.length < 2 ? `${baseSlug || "org"}-workspace` : baseSlug;
-    const result = await createOrganization(newOrgName.trim(), slug);
+    const branches = branchInput.trim()
+      ? [branchInput.trim()]
+      : ["Headquarters - Main Office"];
+
+    const result = await createOrganization(newOrgName.trim(), slug, branches);
     setCreating(false);
 
     if (result.success) {
       setNewOrgName("");
+      setBranchInput("");
       setShowCreateInput(false);
       setOpen(false);
     } else {
@@ -137,14 +143,33 @@ export function OrganizationSwitcher({ collapsed = false }: OrganizationSwitcher
           {/* Quick Add Organization */}
           {showCreateInput ? (
             <form onSubmit={handleCreateOrg} className="p-1 space-y-2">
-              <input
-                type="text"
-                autoFocus
-                value={newOrgName}
-                onChange={(e) => setNewOrgName(e.target.value)}
-                placeholder="Organization name..."
-                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-hidden focus:border-indigo-500"
-              />
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  Organization Name
+                </label>
+                <input
+                  type="text"
+                  autoFocus
+                  value={newOrgName}
+                  onChange={(e) => setNewOrgName(e.target.value)}
+                  placeholder="e.g. Acme Corp..."
+                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-hidden focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  Primary Branch / Location
+                </label>
+                <input
+                  type="text"
+                  value={branchInput}
+                  onChange={(e) => setBranchInput(e.target.value)}
+                  placeholder="e.g. Headquarters - New York..."
+                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-hidden focus:border-indigo-500"
+                />
+              </div>
+
               {createError && (
                 <div className="text-[10px] text-rose-500 font-medium px-1">
                   {createError}

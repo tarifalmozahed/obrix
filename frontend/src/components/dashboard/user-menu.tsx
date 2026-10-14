@@ -61,7 +61,7 @@ export function UserMenu() {
 
           <div className="py-1">
             <Link
-              href="/dashboard/profile"
+              href="/profile"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors font-medium"
             >
@@ -70,7 +70,7 @@ export function UserMenu() {
             </Link>
 
             <Link
-              href="/dashboard/settings"
+              href="/settings"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors font-medium"
             >

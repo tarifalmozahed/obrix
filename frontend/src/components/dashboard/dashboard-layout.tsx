@@ -15,7 +15,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50/60 font-sans text-slate-900 antialiased">
+    <div className="min-h-screen bg-[#F4F5F7] font-sans text-slate-900 antialiased">
       {/* Collapsible Enterprise Sidebar */}
       <AppSidebar
         collapsed={collapsed}
@@ -28,7 +28,7 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
       <div
         className={cn(
           "flex min-h-screen flex-col transition-all duration-300 ease-in-out",
-          collapsed ? "lg:pl-[72px]" : "lg:pl-64"
+          collapsed ? "lg:pl-[76px]" : "lg:pl-64"
         )}
       >
         {/* Sticky Top Navigation */}

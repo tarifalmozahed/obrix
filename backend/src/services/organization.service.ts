@@ -4,17 +4,14 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export interface CreateOrgDTO {
   name: string;
   slug: string;
+  branches?: string[];
+  initialBranch?: string;
 }
 
 export class OrganizationService {
   /**
-   * Creates a new organization and registers the creator as 'owner' in organization_members.
-   * Uses the authenticated user's RLS-scoped Supabase client.
-   *
-   * Architectural Design:
-   * By generating orgId upfront and inserting without `.select()`, we satisfy the INSERT
-   * policy first, record the creator's membership in organization_members, and only then query
-   * the organization. This completely avoids RLS circular dependency traps.
+   * Creates a new organization, registers creator as 'owner',
+   * initializes dynamic branch(es), and seeds default positions with salary structures.
    */
   static async createOrganization(
     dto: CreateOrgDTO,
@@ -71,7 +68,91 @@ export class OrganizationService {
         );
     }
 
-    // 4. Query the created organization
+    // 4. Create Dynamic Branches / Locations for the new organization
+    try {
+      const branchList =
+        dto.branches && dto.branches.length > 0
+          ? dto.branches.filter((b) => b && b.trim().length > 0)
+          : [dto.initialBranch?.trim() || "Headquarters - Main Office"];
+
+      const branchInserts = branchList.map((bName, idx) => ({
+        organization_id: orgId,
+        name: bName.trim(),
+        is_headquarters: idx === 0,
+      }));
+
+      await supabase.from("branches").insert(branchInserts);
+    } catch (branchErr) {
+      console.warn("Notice: branch initialization error:", branchErr);
+    }
+
+    // 5. Seed default positions with position-wise default salary structures
+    try {
+      const defaultPositions = [
+        {
+          organization_id: orgId,
+          title: "Senior Software Engineer",
+          code: "SWE-SR",
+          basic_salary: 80000,
+          house_rent_allowance: 20000,
+          medical_allowance: 5000,
+          transport_allowance: 3000,
+          min_salary: 75000,
+          max_salary: 130000,
+          pay_frequency: "Monthly",
+          currency: "USD",
+          description: "Full-stack system architecture, API design, and core product engineering.",
+        },
+        {
+          organization_id: orgId,
+          title: "Product Designer",
+          code: "DES-PD",
+          basic_salary: 65000,
+          house_rent_allowance: 15000,
+          medical_allowance: 4000,
+          transport_allowance: 2500,
+          min_salary: 60000,
+          max_salary: 105000,
+          pay_frequency: "Monthly",
+          currency: "USD",
+          description: "UI/UX design systems, user journey mapping, and prototype development.",
+        },
+        {
+          organization_id: orgId,
+          title: "HR Specialist",
+          code: "HR-SPEC",
+          basic_salary: 50000,
+          house_rent_allowance: 12000,
+          medical_allowance: 3500,
+          transport_allowance: 2000,
+          min_salary: 45000,
+          max_salary: 80000,
+          pay_frequency: "Monthly",
+          currency: "USD",
+          description: "Talent acquisition, onboarding coordination, and employee relations.",
+        },
+        {
+          organization_id: orgId,
+          title: "Financial Analyst",
+          code: "FIN-ANL",
+          basic_salary: 60000,
+          house_rent_allowance: 14000,
+          medical_allowance: 4000,
+          transport_allowance: 2500,
+          min_salary: 55000,
+          max_salary: 95000,
+          pay_frequency: "Monthly",
+          currency: "USD",
+          description: "Financial planning, payroll audit, budget forecasting, and tax accounting.",
+        },
+      ];
+
+      await supabase.from("positions").insert(defaultPositions);
+    } catch (posErr) {
+      console.warn("Notice: position seeding error:", posErr);
+    }
+
+    // 6. Query the created organization
     const { data: org, error: fetchError } = await supabase
       .from("organizations")
       .select("*")

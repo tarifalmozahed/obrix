@@ -121,4 +121,192 @@ export class HRMSController {
       next(err);
     }
   }
+
+  // Branches / Locations
+  static async listBranches(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const branches = await HRMSService.listBranches(req.organization!.id, req.supabase!);
+      res.status(200).json({ success: true, data: branches });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async createBranch(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const branch = await HRMSService.createBranch(req.organization!.id, req.body, req.supabase!);
+      res.status(201).json({ success: true, data: branch });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updateBranch(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const branch = await HRMSService.updateBranch(
+        req.organization!.id,
+        req.params.id,
+        req.body,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: branch });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async deleteBranch(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await HRMSService.deleteBranch(
+        req.organization!.id,
+        req.params.id,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // Positions & Position-wise Salary Structures
+  static async listPositions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const positions = await HRMSService.listPositions(req.organization!.id, req.supabase!);
+      res.status(200).json({ success: true, data: positions });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async createPosition(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const position = await HRMSService.createPosition(req.organization!.id, req.body, req.supabase!);
+      res.status(201).json({ success: true, data: position });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updatePosition(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const position = await HRMSService.updatePosition(
+        req.organization!.id,
+        req.params.id,
+        req.body,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: position });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async deletePosition(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await HRMSService.deletePosition(
+        req.organization!.id,
+        req.params.id,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // ==========================================
+  // PROBATION DURATIONS
+  // ==========================================
+  static async listProbationDurations(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const items = await HRMSService.listProbationDurations(req.organization!.id, req.supabase!);
+      res.status(200).json({ success: true, data: items });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async createProbationDuration(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const item = await HRMSService.createProbationDuration(req.organization!.id, req.body, req.supabase!);
+      res.status(201).json({ success: true, data: item });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updateProbationDuration(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const item = await HRMSService.updateProbationDuration(
+        req.organization!.id,
+        req.params.id,
+        req.body,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: item });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async deleteProbationDuration(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await HRMSService.deleteProbationDuration(
+        req.organization!.id,
+        req.params.id,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // ==========================================
+  // SHIFTS
+  // ==========================================
+  static async listShifts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const items = await HRMSService.listShifts(req.organization!.id, req.supabase!);
+      res.status(200).json({ success: true, data: items });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async createShift(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const item = await HRMSService.createShift(req.organization!.id, req.body, req.supabase!);
+      res.status(201).json({ success: true, data: item });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updateShift(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const item = await HRMSService.updateShift(
+        req.organization!.id,
+        req.params.id,
+        req.body,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: item });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async deleteShift(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await HRMSService.deleteShift(
+        req.organization!.id,
+        req.params.id,
+        req.supabase!
+      );
+      res.status(200).json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

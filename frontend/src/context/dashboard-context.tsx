@@ -33,6 +33,8 @@ export interface OrganizationItem {
   createdAt?: string;
   createdBy?: string;
   memberCount?: number;
+  logoUrl?: string | null;
+  logoPublicId?: string | null;
   members?: OrganizationMember[];
 }
 
@@ -44,7 +46,11 @@ interface DashboardContextType {
   loading: boolean;
   orgLoading: boolean;
   refreshUserData: () => Promise<void>;
-  createOrganization: (name: string, slug: string) => Promise<{ success: boolean; error?: string }>;
+  createOrganization: (
+    name: string,
+    slug: string,
+    branches?: string[]
+  ) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -329,7 +335,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     router.replace("/login");
   };
 
-  const createOrganization = async (name: string, slug: string) => {
+  const createOrganization = async (name: string, slug: string, branches?: string[]) => {
     try {
       setOrgLoading(true);
       const cleanSlug =
@@ -338,7 +344,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
       const res = await apiRequest<{ id: string; name: string; slug: string }>("/organizations", {
         method: "POST",
-        body: JSON.stringify({ name, slug: cleanSlug }),
+        body: JSON.stringify({ name, slug: cleanSlug, branches }),
       });
 
       if (res.success && res.data) {
