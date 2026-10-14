@@ -1,0 +1,14 @@
+{
+  "name": "orbix-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Orbix - Multi-Module Business Management System",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build",
+    "start:frontend": "npm --prefix frontend run start",
+    "start:backend": "npm --prefix backend run start"
+  }
+}
